@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "668171424011",
+    "project_id": "vic-chat-45dae",
+    "storage_bucket": "vic-chat-45dae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668171424011:android:6b2704778f5c9d0535920e",
+        "android_client_info": {
+          "package_name": "com.example.vic_chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCC5o2-qq4Hlveq3_R3XJ1vZ2AAuG6SXR4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
