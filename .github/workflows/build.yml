@@ -27,9 +27,35 @@ jobs:
 
       - name: Create icons
         run: |
-          for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
-            mkdir -p android/app/src/main/res/mipmap-$d
-            cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-$d/ic_launcher.png 2>/dev/null || python3 -c "
+          python3 << 'PYEOF'
           import struct, zlib, os
-          size = {'mdpi':48,'hdpi':72,'xhdpi':96,'xxhdpi':144,'xxxhdpi':192}['$d']
-          os.makedirs('android/app/src/main/res/mipmap-$d', exist_ok=True)
+          sizes = {'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
+          for folder, size in sizes.items():
+              path = f'android/app/src/main/res/{folder}/ic_launcher.png'
+              os.makedirs(os.path.dirname(path), exist_ok=True)
+              row = b'\x00' + bytes([7,94,84]*size)
+              raw = row * size
+              def chunk(t,d):
+                  c = struct.pack('>I',len(d))+t+d
+                  return c+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
+              png = b'\x89PNG\r\n\x1a\n'
+              png += chunk(b'IHDR',struct.pack('>IIBBBBB',size,size,8,2,0,0,0))
+              png += chunk(b'IDAT',zlib.compress(raw))
+              png += chunk(b'IEND',b'')
+              open(path,'wb').write(png)
+              print(f'Created {path}')
+          PYEOF
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+        continue-on-error: true
+
+      - name: Build APK
+        run: flutter build apk --release --no-shrink
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: vic-chat
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days:
