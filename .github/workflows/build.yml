@@ -1,84 +1,9 @@
-name: Build APK
-
-on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.22.0'
-          channel: 'stable'
-          cache: true
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Create launcher icons
-        run: |
-          mkdir -p vic-chat/android/app/src/main/res/mipmap-hdpi
-          mkdir -p vic-chat/android/app/src/main/res/mipmap-mdpi
-          mkdir -p vic-chat/android/app/src/main/res/mipmap-xhdpi
-          mkdir -p vic-chat/android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p vic-chat/android/app/src/main/res/mipmap-xxxhdpi
-          cd vic-chat && flutter pub run flutter_launcher_icons 2>/dev/null || true
-          cd ..
-          # Generate simple icon using Python
-          python3 -c "
-          import os
-          sizes = {'mipmap-mdpi': 48, 'mipmap-hdpi': 72, 'mipmap-xhdpi': 96, 'mipmap-xxhdpi': 144, 'mipmap-xxxhdpi': 192}
-          for folder, size in sizes.items():
-              path = f'vic-chat/android/app/src/main/res/{folder}/ic_launcher.png'
-              os.makedirs(os.path.dirname(path), exist_ok=True)
-              try:
-                  from PIL import Image, ImageDraw
-                  img = Image.new('RGB', (size, size), color=(7, 94, 84))
-                  draw = ImageDraw.Draw(img)
-                  draw.ellipse([size//4, size//4, 3*size//4, 3*size//4], fill=(37, 211, 102))
-                  img.save(path)
-              except:
-                  import struct, zlib
-                  def create_png(w, h):
-                      raw = b'\\x00' + bytes([7, 94, 84] * w) 
-                      raw = raw * h
-                      def chunk(name, data):
-                          c = struct.pack('>I', len(data)) + name + data
-                          return c + struct.pack('>I', zlib.crc32(name + data) & 0xffffffff)
-                      ihdr = struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)
-                      idat = zlib.compress(raw)
-                      return b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', ihdr) + chunk(b'IDAT', idat) + chunk(b'IEND', b'')
-                  with open(path, 'wb') as f:
-                      f.write(create_png(size, size))
-          "
-
-      - name: Analyze code
-        run: cd vic-chat && flutter analyze --no-fatal-infos
-        continue-on-error: true
-
-      - name: Build APK (release)
-        run: cd vic-chat && flutter build apk --release --no-shrink
-
-      - name: Rename APK
-        run: mv vic-chat/build/app/outputs/flutter-apk/app-release.apk vic-chat/build/app/outputs/flutter-apk/vic-chat.apk
+- name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/vic-chat.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: vic-chat
-          path: vic-chat/build/app/outputs/flutter-apk/vic-chat.apk
+          path: build/app/outputs/flutter-apk/vic-chat.apk
           retention-days: 7
