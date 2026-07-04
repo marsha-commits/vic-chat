@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// ─── GANTI DENGAN APP ID AGORA KAMU ─────────────────────────────────────────
-/// Daftar gratis di https://console.agora.io
-/// Buat project → ambil App ID → paste di sini
-const String agoraAppId = 'YOUR_AGORA_APP_ID';
+const String agoraAppId = '22cce323cc9346fa877c9c07bee663cd';
 
-/// Token Agora (null = no-auth mode — oke buat development)
-/// Untuk production, buat token server: https://docs.agora.io/en/video-calling/token-authentication
 const String? agoraToken = null;
 
-/// ─── WARNA APLIKASI ──────────────────────────────────────────────────────────
 class AppColors {
   static const teal       = Color(0xFF075E54);
   static const tealLight  = Color(0xFF128C7E);
