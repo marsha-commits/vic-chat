@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_app_id">1:668171424011:android:6b2704778f5c9d0535920e</string>
+    <string name="google_api_key">AIzaSyCC5o2-qq4HIveq3_R3XJ1vZ2AAuG6SXR4</string>
+    <string name="google_storage_bucket">vic-chat-45dae.firebasestorage.app</string>
+    <string name="project_id">vic-chat-45dae</string>
+    <string name="gcm_defaultSenderId">668171424011</string>
+    <string name="default_web_client_id"></string>
+    <string name="google_crash_reporting_api_key"></string>
+</resources>
